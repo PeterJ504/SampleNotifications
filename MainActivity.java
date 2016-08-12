@@ -3,6 +3,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -32,12 +33,15 @@ public class MainActivity extends AppCompatActivity {
 
         // create 3 items to start new activity
         Intent intent = new Intent(MainActivity.this,NotificationActivity.class);
+        Intent actionIntent = new Intent(MainActivity.this,ActionActivity.class);
 
         TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(getApplicationContext()) ;
         taskStackBuilder.addParentStack(NotificationActivity.class);
         taskStackBuilder.addNextIntent(intent);
 
         PendingIntent pendingIntent = taskStackBuilder.getPendingIntent(123,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent actionPendingIntent = PendingIntent.getActivity(this,505,actionIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
 
@@ -46,6 +50,15 @@ public class MainActivity extends AppCompatActivity {
         nBuilder.setContentText("This is the text");
         nBuilder.setSmallIcon(R.drawable.ic_stat_name);
         nBuilder.setContentIntent(pendingIntent);
+
+        // Add sound, vibration, and lights.
+        nBuilder.setDefaults(Notification.DEFAULT_SOUND);
+        nBuilder.setVibrate(new long[] {50, 100, 500, 100}); // off/on/off/on -  in milliseconds
+        nBuilder.setLights(Color.BLUE,500,500);  // off/on -  in milliseconds
+
+        // Add button on Notification
+        nBuilder.addAction(R.drawable.ic_open,"Open",actionPendingIntent);
+
 
         Notification notification = nBuilder.build();
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
